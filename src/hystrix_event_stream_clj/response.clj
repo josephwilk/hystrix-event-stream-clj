@@ -1,9 +1,9 @@
-(ns hystrix-event-stream-clj.request
+(ns hystrix-event-stream-clj.response
   (:require
     [aleph.http  :refer :all]
     [lamina.core :refer :all]))
 
-(defn write-metrics [ch]
+(defn- write-metrics [ch]
   (try
     (enqueue ch (str "\nping: \n"))
     (doall (map #(enqueue ch (str "\ndata: " (json/encode %) "\n")) (metrics/stream)))
@@ -14,12 +14,12 @@
     (catch Exception e 
       false)))
 
-(defn metric-streaming [ch] (future (loop [connected true]
+(defn- metric-streaming [ch] (future (loop [connected true]
                                       (when connected
                                         (Thread/sleep 1000)
                                         (recur (write-metrics ch))))))
 
-(defn init-stream-channel [ch]
+(defn- init-stream-channel [ch]
   (receive-all ch (fn [_]))
   (metric-streaming ch))
 
