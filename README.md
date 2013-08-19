@@ -1,10 +1,6 @@
 # hystrix-event-stream-clj
 
-A Clojure library designed to ... well, that part is up to you.
-
-## Usage
-
-FIXME
+Easy way to setup a hystrix event stream without having to mess with WEB.xml pants.
 
 ## License
 
