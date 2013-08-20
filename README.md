@@ -5,6 +5,12 @@
 
 Easy way to setup a Hystrix (https://github.com/Netflix/Hystrix) event stream without having to mess with WEB.xml pants.
 
+## Install
+
+Add to your `project.clj`
+
+https://clojars.org/hystrix-event-stream-clj
+
 ## Usage
 
 ```clojure
