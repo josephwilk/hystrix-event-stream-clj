@@ -5,6 +5,24 @@
 
 Easy way to setup a Hystrix (https://github.com/Netflix/Hystrix) event stream without having to mess with WEB.xml pants.
 
+## Usage
+
+```clojure
+ (:require [hystrix-event-stream-clj.response as event-stream])
+
+ (defroutes app (GET "/hystrix.stream" (event-stream/stream-metrics))
+```
+
+Test the event stream by curling:
+
+```
+curl locahost:5000/hystrix.stream
+
+data: []
+
+data: []
+```
+
 ## License
 
 (The MIT License)
