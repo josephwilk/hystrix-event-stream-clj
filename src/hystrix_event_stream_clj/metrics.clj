@@ -1,4 +1,4 @@
-(ns hystrix-event-stream-clj.core
+(ns hystrix-event-stream-clj.metrics
   (:import [rx Observable Observer Subscription] rx.subscriptions.Subscriptions
            [com.netflix.hystrix Hystrix HystrixExecutable HystrixCommandMetrics HystrixThreadPoolMetrics HystrixCircuitBreaker$Factory]
            [com.netflix.hystrix.util HystrixRollingNumberEvent])
@@ -8,7 +8,7 @@
    [com.netflix.hystrix.core :as hystrix]
    [lamina.core              :refer :all]))
 
-(defn metric->json [^HystrixCommandMetrics cmd]
+(defn- command->metrics [^HystrixCommandMetrics cmd]
   (let [key (.getCommandKey cmd)
         circuit-breaker (HystrixCircuitBreaker$Factory/getInstance key)
         healthCounts (.getHealthCounts cmd)
@@ -81,7 +81,7 @@
 
      :reportingHosts 1}))
 
-(defn thread-pool-metric->json [pool]
+(defn- thread-pool->metric [pool]
   (let [key (.getThreadPoolKey pool)]
 
     {:type, "HystrixThreadPool"
@@ -104,8 +104,8 @@
 
      :reportingHosts 1}))
 
-(defn stream []
-  (map metric->json (HystrixCommandMetrics/getInstances)))
+(defn commands []
+  (map command->metrics (HystrixCommandMetrics/getInstances)))
 
-(defn pool-stream []
-  (map thread-pool-metric->json (HystrixThreadPoolMetrics/getInstances)))
+(defn thread-pools []
+  (map thread-pool->metric (HystrixThreadPoolMetrics/getInstances)))

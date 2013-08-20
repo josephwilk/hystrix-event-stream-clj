@@ -1,17 +1,19 @@
 (ns hystrix-event-stream-clj.response
   (:require
-    [aleph.http  :refer :all]
-    [lamina.core :refer :all]))
+   [cheshire.core :as json]
+   [aleph.http  :refer :all]
+   [lamina.core :refer :all]
+   [hystrix-event-stream-clj.metrics :as metrics]))
 
 (defn- write-metrics [ch]
   (try
     (enqueue ch (str "\nping: \n"))
-    (doall (map #(enqueue ch (str "\ndata: " (json/encode %) "\n")) (metrics/stream)))
-    (doall (map #(enqueue ch (str "\ndata: " (json/encode %) "\n")) (metrics/pool-stream)))
+    (doall (map #(enqueue ch (str "\ndata: " (json/encode %) "\n")) (metrics/commands)))
+    (doall (map #(enqueue ch (str "\ndata: " (json/encode %) "\n")) (metrics/thread-pools)))
     true
-    (catch java.io.IOException e 
+    (catch java.io.IOException e
       false)
-    (catch Exception e 
+    (catch Exception e
       false)))
 
 (defn- metric-streaming [ch] (future (loop [connected true]
