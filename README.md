@@ -29,6 +29,12 @@ data: []
 data: []
 ```
 
+## But Why?
+
+The event stream can be consumed by the Hystrix Dashboard. Giving you pretty mointoring of all circuit breakers.
+
+![Hystrix Dashboard](https://monosnap.com/image/nOFxuqgzQ6evEeGa2iA2r4ANn.png)
+
 ## License
 
 (The MIT License)
