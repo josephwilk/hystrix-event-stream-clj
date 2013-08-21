@@ -5,7 +5,7 @@
    [lamina.core :refer :all]
    [hystrix-event-stream-clj.metrics :as metrics]))
 
-(def delay 2000)
+(def default-delay 2000)
 
 (defn- write-metrics [ch]
   (try
@@ -21,7 +21,7 @@
 (defn- metric-streaming [ch]
   (future
     (loop [connected true]
-      (Thread/sleep delay)
+      (Thread/sleep default-delay)
       (when connected (recur (write-metrics ch))))))
 
 (defn- init-stream-channel [ch]

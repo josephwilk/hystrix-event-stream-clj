@@ -1,4 +1,4 @@
-(defproject hystrix-event-stream-clj "0.1.2"
+(defproject hystrix-event-stream-clj "0.1.3"
   :description "Generate hystrix event streams"
   :url "http://github.com/josephwilk/"
   :license {:name "Eclipse Public License"
