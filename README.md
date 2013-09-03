@@ -48,25 +48,24 @@ With Jetty you can use the Netflix Hystrix Servlet. Here is an example of how:
 
 (defn run-jetty-with-hystrix [app options]
   (let [s (#'jetty/create-server options)
-        handler (make-app)]
-    (let [^QueuedThreadPool p (QueuedThreadPool. ^Integer (options :max-threads 50))]
-      (when (:daemon? options false)
-        (.setDaemon p true))
-      (doto s
-        (.setThreadPool p))
-      (when-let [configurator (:configurator options)]
-        (configurator s))
+        ^QueuedThreadPool p (QueuedThreadPool. ^Integer (options :max-threads 50))]
+    (when (:daemon? options false)
+      (.setDaemon p true))
+    (doto s
+      (.setThreadPool p))
+    (when-let [configurator (:configurator options)]
+      (configurator s))
 
-      (let [hystrix-holder  (ServletHolder. HystrixMetricsStreamServlet)
-            app-holder (ServletHolder. (servlet/servlet app))
-            context (ServletContextHandler. s "/" ServletContextHandler/SESSIONS)]
-        (.addServlet context hystrix-holder "/hystrix.stream")
-        (.addServlet context app-holder "/"))
+    (let [hystrix-holder  (ServletHolder. HystrixMetricsStreamServlet)
+          app-holder (ServletHolder. (servlet/servlet app))
+          context (ServletContextHandler. s "/" ServletContextHandler/SESSIONS)]
+      (.addServlet context hystrix-holder "/hystrix.stream")
+      (.addServlet context app-holder "/"))
 
-      (.start s)
-      (when (:join? options true)
-        (.join s))
-      s)))
+    (.start s)
+    (when (:join? options true)
+      (.join s))
+    s))
 ```
 
 
