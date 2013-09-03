@@ -34,6 +34,42 @@ The event stream can be consumed by the Hystrix Dashboard. Giving you pretty moi
 
 ![Hystrix Dashboard](https://monosnap.com/image/nOFxuqgzQ6evEeGa2iA2r4ANn.png)
 
+## How about with Jetty
+
+With Jetty you can use the Netflix Hystrix Servlet. Here is an example of how:
+
+```clojure
+(import [com.netflix.hystrix.contrib.metrics.eventstream HystrixMetricsStreamServlet])
+(import [org.eclipse.jetty.server Server])
+(import [org.eclipse.jetty.servlet ServletContextHandler ServletHolder])
+
+(require '[ring.util.servlet :as servlet])
+(require '[ring.adapter.jetty :as jetty])
+
+(defn run-jetty-with-hystrix [app options]
+  (let [s (#'jetty/create-server options)
+        handler (make-app)]
+    (let [^QueuedThreadPool p (QueuedThreadPool. ^Integer (options :max-threads 50))]
+      (when (:daemon? options false)
+        (.setDaemon p true))
+      (doto s
+        (.setThreadPool p))
+      (when-let [configurator (:configurator options)]
+        (configurator s))
+
+      (let [hystrix-holder  (ServletHolder. HystrixMetricsStreamServlet)
+            app-holder (ServletHolder. (servlet/servlet app))
+            context (ServletContextHandler. s "/" ServletContextHandler/SESSIONS)]
+        (.addServlet context hystrix-holder "/hystrix.stream")
+        (.addServlet context app-holder "/"))
+
+      (.start s)
+      (when (:join? options true)
+        (.join s))
+      s)))
+```
+
+
 ## License
 
 (The MIT License)
