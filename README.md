@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.org/josephwilk/hystrix-event-stream-clj.png?branch=master)](https://travis-ci.org/josephwilk/hystrix-event-stream-clj)
 
-
-Easy way to setup a Hystrix (https://github.com/Netflix/Hystrix) event stream without having to mess with WEB.xml pants.
+Easy way to setup a Hystrix (https://github.com/Netflix/Hystrix) event stream without having to use servlets.
 
 ## Install
 
@@ -11,7 +10,7 @@ Add to your `project.clj`
 
 https://clojars.org/hystrix-event-stream-clj
 
-## Usage
+## Usage with Netty/Compojure
 
 ```clojure
  (:require [hystrix-event-stream-clj.core as hystrix-event])
