@@ -36,7 +36,7 @@ The event stream can be consumed by the Hystrix Dashboard. Giving you pretty moi
 
 ## How about with Jetty
 
-With Jetty you can use the Netflix Hystrix Servlet. Here is an example of how:
+With Jetty you can use the Netflix Hystrix Servlet directly. Here is an example of how:
 
 ```clojure
 (import [com.netflix.hystrix.contrib.metrics.eventstream HystrixMetricsStreamServlet])
@@ -66,8 +66,12 @@ With Jetty you can use the Netflix Hystrix Servlet. Here is an example of how:
     (when (:join? options true)
       (.join s))
     s))
-```
 
+
+(defroutes app (GET "/hello" {:status 200 :body "Hello"})
+
+(run-jetty-with-hystrix app {:port http-port :join? false})
+```
 
 ## License
 
