@@ -15,7 +15,7 @@ https://clojars.org/hystrix-event-stream-clj
 ```clojure
  (:require [hystrix-event-stream-clj.core as hystrix-event])
 
- (defroutes app (GET "/hystrix.stream" (hystrix-event/stream))
+ (defroutes app (GET "/hystrix.stream" [] (hystrix-event/stream))
 ```
 
 Test the event stream by curling:
