@@ -13,9 +13,32 @@ https://clojars.org/hystrix-event-stream-clj
 ## Usage with Netty/Compojure
 
 ```clojure
- (:require [hystrix-event-stream-clj.core as hystrix-event])
+ (ns example.handler
+  (:use compojure.core)
+  (:gen-class)
+  (:require [compojure.handler :as handler]
+            [compojure.route :as route]
+            [aleph.http :refer [start-http-server wrap-ring-handler]]
+            [com.netflix.hystrix.core :refer [defcommand]]
+            [hystrix-event-stream-clj.core :as hystrix-event]))
 
- (defroutes app (GET "/hystrix.stream" [] (hystrix-event/stream))
+(defcommand hello
+  "Safe hello!"
+  []
+  "Hello world!")
+
+(defroutes app-routes
+  (GET "/" [] (hello))
+  (GET "/hystrix.stream" [] (hystrix-event/stream))
+  (route/resources "/")
+  (route/not-found "Not Found"))
+
+(def app
+  (handler/site app-routes))
+
+(defn -main
+  [port]
+  (start-http-server (wrap-ring-handler app) {:port (Integer. port)}))
 ```
 
 Test the event stream by curling:
