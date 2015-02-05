@@ -7,11 +7,15 @@
 
 (def default-delay 2000)
 
+(defn- enqueue-metrics [ch metrics]
+  (doseq [metric metrics]
+    (enqueue ch (str "\ndata: " (json/generate-string metric) "\n"))))
+
 (defn- write-metrics [ch]
   (try
     (enqueue ch (str "\nping: \n"))
-    (doall (map #(enqueue ch (str "\ndata: " (json/encode %) "\n")) (metrics/commands)))
-    (doall (map #(enqueue ch (str "\ndata: " (json/encode %) "\n")) (metrics/thread-pools)))
+    (enqueue-metrics ch (metrics/commands))
+    (enqueue-metrics ch (metrics/thread-pools))
     true
     (catch java.io.IOException e
       false)

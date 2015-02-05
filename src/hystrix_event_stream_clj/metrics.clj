@@ -1,6 +1,6 @@
 (ns hystrix-event-stream-clj.metrics
   (:import [rx Observable Observer Subscription] rx.subscriptions.Subscriptions
-           [com.netflix.hystrix Hystrix HystrixExecutable HystrixCommandMetrics HystrixThreadPoolMetrics HystrixCircuitBreaker$Factory]
+           [com.netflix.hystrix Hystrix HystrixExecutable HystrixCommandMetrics HystrixThreadPoolMetrics HystrixCircuitBreaker$Factory HystrixCommandProperties]
            [com.netflix.hystrix.util HystrixRollingNumberEvent])
   (:require
    [aleph.http               :refer :all]
@@ -12,7 +12,7 @@
   (let [key (.getCommandKey cmd)
         circuit-breaker (HystrixCircuitBreaker$Factory/getInstance key)
         healthCounts (.getHealthCounts cmd)
-        cmd-properties (.getProperties cmd)]
+        ^HystrixCommandProperties cmd-properties (.getProperties cmd)]
     {:type "HystrixCommand"
      :name (.name key)
      :group (-> cmd .getCommandGroup .name)
@@ -61,46 +61,46 @@
                     "100" (.getTotalTimePercentile cmd 100)
                     }
 
-     :propertyValue_circuitBreakerRequestVolumeThreshold (-> cmd-properties .circuitBreakerRequestVolumeThreshold .get)
-     :propertyValue_circuitBreakerSleepWindowInMilliseconds (-> cmd-properties .circuitBreakerSleepWindowInMilliseconds .get)
-     :propertyValue_circuitBreakerErrorThresholdPercentage (-> cmd-properties .circuitBreakerErrorThresholdPercentage .get)
-     :propertyValue_circuitBreakerForceOpen (-> cmd-properties .circuitBreakerForceOpen .get)
-     :propertyValue_circuitBreakerForceClosed (-> cmd-properties .circuitBreakerForceClosed .get)
-     :propertyValue_circuitBreakerEnabled (-> cmd-properties .circuitBreakerEnabled .get)
+     :propertyValue_circuitBreakerRequestVolumeThreshold (.. cmd-properties circuitBreakerRequestVolumeThreshold get)
+     :propertyValue_circuitBreakerSleepWindowInMilliseconds (.. cmd-properties circuitBreakerSleepWindowInMilliseconds get)
+     :propertyValue_circuitBreakerErrorThresholdPercentage (.. cmd-properties circuitBreakerErrorThresholdPercentage get)
+     :propertyValue_circuitBreakerForceOpen (.. cmd-properties circuitBreakerForceOpen get)
+     :propertyValue_circuitBreakerForceClosed (.. cmd-properties circuitBreakerForceClosed get)
+     :propertyValue_circuitBreakerEnabled (.. cmd-properties circuitBreakerEnabled get)
 
-     :propertyValue_executionIsolationStrategy (-> cmd-properties .executionIsolationStrategy .get .name)
-     :propertyValue_executionIsolationThreadTimeoutInMilliseconds (-> cmd-properties .executionIsolationThreadTimeoutInMilliseconds .get)
-     :propertyValue_executionIsolationThreadInterruptOnTimeout (-> cmd-properties .executionIsolationThreadInterruptOnTimeout .get)
-     :propertyValue_executionIsolationThreadPoolKeyOverride (-> cmd-properties .executionIsolationThreadPoolKeyOverride .get)
-     :propertyValue_executionIsolationSemaphoreMaxConcurrentRequests (-> cmd-properties .executionIsolationSemaphoreMaxConcurrentRequests .get)
-     :propertyValue_fallbackIsolationSemaphoreMaxConcurrentRequests (-> cmd-properties .fallbackIsolationSemaphoreMaxConcurrentRequests .get )
+     :propertyValue_executionIsolationStrategy (.. cmd-properties executionIsolationStrategy get toString)
+     :propertyValue_executionIsolationThreadTimeoutInMilliseconds (.. cmd-properties executionIsolationThreadTimeoutInMilliseconds get)
+     :propertyValue_executionIsolationThreadInterruptOnTimeout (.. cmd-properties executionIsolationThreadInterruptOnTimeout get)
+     :propertyValue_executionIsolationThreadPoolKeyOverride (.. cmd-properties executionIsolationThreadPoolKeyOverride get)
+     :propertyValue_executionIsolationSemaphoreMaxConcurrentRequests (.. cmd-properties executionIsolationSemaphoreMaxConcurrentRequests get)
+     :propertyValue_fallbackIsolationSemaphoreMaxConcurrentRequests (.. cmd-properties fallbackIsolationSemaphoreMaxConcurrentRequests get )
 
-     :propertyValue_metricsRollingStatisticalWindowInMilliseconds (-> cmd-properties .metricsRollingStatisticalWindowInMilliseconds .get)
-     :propertyValue_requestCacheEnabled, (-> cmd-properties .requestCacheEnabled .get)
-     :propertyValue_requestLogEnabled, (-> cmd-properties .requestLogEnabled .get)
+     :propertyValue_metricsRollingStatisticalWindowInMilliseconds (.. cmd-properties metricsRollingStatisticalWindowInMilliseconds get)
+     :propertyValue_requestCacheEnabled, (.. cmd-properties requestCacheEnabled get)
+     :propertyValue_requestLogEnabled, (.. cmd-properties requestLogEnabled get)
 
      :reportingHosts 1}))
 
-(defn- thread-pool->metric [pool]
+(defn- thread-pool->metric [^HystrixThreadPoolMetrics pool]
   (let [key (.getThreadPoolKey pool)]
 
     {:type, "HystrixThreadPool"
      :name, (.name key)
      :currentTime, (System/currentTimeMillis)
 
-     :currentActiveCount (-> pool .getCurrentActiveCount .intValue)
-     :currentCompletedTaskCount (-> pool .getCurrentCompletedTaskCount .longValue)
-     :currentCorePoolSize (-> pool .getCurrentCorePoolSize .intValue)
-     :currentLargestPoolSize (-> pool .getCurrentLargestPoolSize .intValue)
-     :currentMaximumPoolSize (-> pool .getCurrentMaximumPoolSize .intValue)
-     :currentPoolSize (-> pool .getCurrentPoolSize .intValue)
-     :currentQueueSize (-> pool .getCurrentQueueSize .intValue)
-     :currentTaskCount (-> pool .getCurrentTaskCount .longValue)
-     :rollingCountThreadsExecuted (-> pool .getRollingCountThreadsExecuted)
-     :rollingMaxActiveThreads (-> pool .getRollingMaxActiveThreads)
+     :currentActiveCount (.. pool getCurrentActiveCount intValue)
+     :currentCompletedTaskCount (.. pool getCurrentCompletedTaskCount longValue)
+     :currentCorePoolSize (.. pool getCurrentCorePoolSize intValue)
+     :currentLargestPoolSize (.. pool getCurrentLargestPoolSize intValue)
+     :currentMaximumPoolSize (.. pool getCurrentMaximumPoolSize intValue)
+     :currentPoolSize (.. pool getCurrentPoolSize intValue)
+     :currentQueueSize (.. pool getCurrentQueueSize intValue)
+     :currentTaskCount (.. pool getCurrentTaskCount longValue)
+     :rollingCountThreadsExecuted (.. pool getRollingCountThreadsExecuted)
+     :rollingMaxActiveThreads (.. pool getRollingMaxActiveThreads)
 
-     :propertyValue_queueSizeRejectionThreshold (-> pool .getProperties .queueSizeRejectionThreshold .get)
-     :propertyValue_metricsRollingStatisticalWindowInMilliseconds (-> pool .getProperties .metricsRollingStatisticalWindowInMilliseconds .get)
+     :propertyValue_queueSizeRejectionThreshold (.. pool getProperties queueSizeRejectionThreshold get)
+     :propertyValue_metricsRollingStatisticalWindowInMilliseconds (.. pool getProperties metricsRollingStatisticalWindowInMilliseconds get)
 
      :reportingHosts 1}))
 
