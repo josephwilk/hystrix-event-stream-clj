@@ -17,7 +17,7 @@
     (hystrix/execute #'testy)
     (let [data (metrics/commands)]
       (count data) => 1
-      (-> data first :name) => "testy"
+      (-> data first :name) => "hystrix-event-stream-clj.t-metrics/testy"
       (-> data first :type) => "HystrixCommand"))
 
   (fact "it returns thread pool metrics"
